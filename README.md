@@ -77,23 +77,3 @@ For local development:
 ```text
 http://localhost:8000/callback/
 ```
-
-## GitHub Readiness
-
-The repository is set up so local-only files should stay out of source control:
-
-- `.env` and other local env files are ignored
-- SQLite database files are ignored
-- virtual environments, editor folders, caches, and OS junk files are ignored
-
-Before pushing, verify that you are not committing:
-
-- real API keys or secrets
-- local database files
-- IDE configuration
-
-## Security Notes
-
-- Secrets should only live in `.env`, never in committed source files
-- The Spotify client secret is used server-side only
-- Rotate any previously exposed Spotify, Gemini, or Django secrets before reusing this project publicly
