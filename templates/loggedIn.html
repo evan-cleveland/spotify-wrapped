@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        /* Ensure the body takes full height of the viewport */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .background-container {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* Full viewport height */
+            background-image: url('{% static "application/swirl.png" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Centers the content inside */
+        }
+
+        body.dark-mode .background-container {
+            background-image: url('{% static "application/loggedD.png" %}');
+        }
+
+        .content {
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better text visibility */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* Light mode styling for all buttons */
+        body:not(.dark-mode) .content button,
+        body:not(.dark-mode) .content a {
+            background-color: #3498db; /* Light blue background */
+            color: white;
+        }
+
+        body:not(.dark-mode) .content button:hover,
+        body:not(.dark-mode) .content a:hover {
+            background-color: #2980b9; /* Darker blue on hover */
+        }
+
+        /* Dark mode styling for all buttons */
+        body.dark-mode .content button,
+        body.dark-mode .content a {
+            background-color: #333333; /* Dark grey background */
+            color: white;
+        }
+
+        body.dark-mode .content button:hover,
+        body.dark-mode .content a:hover {
+            background-color: #444444; /* Darker grey on hover */
+        }
+
+        /* Link button styles (e.g., "a" tags) */
+        .content a {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        /* Button specific styles for Contact the Developers */
+        .contact-button {
+            margin-top: 15px;
+        }
+
+        /* Position the dark mode toggle button */
+        #darkModeToggle {
+            position: absolute;
+            top: 1%;
+            right: 1%;
+            padding: 12px 20px;
+            background-color: #3498db; /* Light blue background */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 10; /* Ensure it stays above other content */
+            transition: background-color 0.3s ease; /* Smooth background color change */
+        }
+
+        /* Hover state for the dark mode button */
+        #darkModeToggle:hover {
+            background-color: #2980b9; /* Darker blue background on hover */
+        }
+
+        /* Dark mode styling for the button */
+        body.dark-mode #darkModeToggle {
+            background-color: #333333; /* Dark background in dark mode */
+            color: white; /* White text in dark mode */
+        }
+
+        /* Dark mode button hover state */
+        body.dark-mode #darkModeToggle:hover {
+            background-color: #444444; /* Darker background on hover in dark mode */
+        }
+
+        .delete-button {
+            background-color: #dc3545; /* Red */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333; /* Darker red */
+        }
+    </style>
+</head>
+<body>
+<div class="background-container" id="bg">
+    <!-- Dark Mode Button -->
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+    <div class="content">
+        <h1>Welcome to your Dashboard</h1>
+        <h2>Spotify User: {{ username }}</h2> <!-- Display Spotify username -->
+        <p>You are now logged in!</p>
+        <a href="{% url 'user_data' %}">View User Data</a>
+        <a href="{% url 'saved_wrappeds' %}">View Saved Wraps</a>
+        <a href="{% url 'landing' %}">Log Out</a>
+        <!-- Green Contact the Developers Button -->
+        <a href="https://sites.google.com/view/spotify-wrapper?usp=sharing" class="contact-button" target="_blank">Contact
+            Developers</a>
+    </div>
+    ß
+</div>
+
+
+<script>
+    /**
+     * Not a function, enables dark mode button to actually toggle dark mode.
+     */
+    document.getElementById('darkModeToggle').addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        // Optionally, store the mode preference in localStorage
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            localStorage.removeItem('darkMode');
+        }
+    });
+
+    // Check for saved dark mode preference on page load
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
+
+</script>
+</body>
+</html>

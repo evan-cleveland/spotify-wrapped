@@ -1,0 +1,557 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.80, maximum-scale=0.80, user-scalable=yes">
+    <title>User Data</title>
+    <style>
+        /* Default styles for light mode */
+        body, html {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            margin: auto;
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            background-image: url('{% static "application/uDataL.png" %}');
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* White text */
+            background-image: url('{% static "application/uDataD.jpg" %}');
+        }
+
+        .slideshow-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 5% auto 0; /* Added 2% margin at the top */
+            height: 80vh;
+            border: 2px solid #ccc;
+            overflow: hidden; /* Prevent arrows from spilling outside the frame */
+        }
+
+
+        .slide {
+            height: 80vh;
+            padding: 2rem;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            background-color: rgb(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+                width: 100%; /* Ensure each slide matches the container size */
+            box-sizing: border-box; /* Include padding/borders in the dimensions */
+            background-size: contain; /* Scale the content within the slide */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Dark mode styles for slides */
+        body.dark-mode .slide {
+            background-color: rgb(18, 18, 18, 0.5); /* Dark background for slides */
+            color: #ffffff; /* White text in slides */
+            backdrop-filter: blur(5px);
+        }
+
+        .title {
+            color: #1e3a8a;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+        .subtitle {
+            color: #1e3a8a;
+            font-size: 1.7rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+
+        .item-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+            padding: 1.5rem;
+        }
+
+        .item-number {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 1rem;
+            min-width: 2.5rem;
+        }
+
+        .item-image {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 4px;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+
+        .item-details {
+            color: #1e3a8a;
+        }
+
+        .item-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Animation delay loop */
+        {% for delay in animation_delays %}
+            .item-row:nth-child({{ forloop.counter }}) {
+                animation-delay: {{ delay }}s;
+            }
+        {% endfor %}
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: rgba(0, 0, 0, 0.5);
+            user-select: none;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #f1c40f; /* Gold color for the heading */
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            font-size: 12px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Glowing button styles */
+        .glowing-button {
+            background-color: #2980b9;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 20px 0;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: box-shadow 0.3s ease;
+            align-self: center;
+        }
+
+        .glowing-button:hover {
+            background-color: #2980b9;
+            box-shadow: 0 0 15px #2980b9, 0 0 25px #2980b9, 0 0 35px #2980b9;
+        }
+
+        /* Container for the magic ball image */
+        .magic-ball-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .magic-ball-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .response-text {
+            font-size: 2em; /* Larger text */
+            font-weight: bold;
+            color: #333333; /* Darker text color */
+            text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc; /* Softer and less intense glow */
+            padding: 20px; /* Add padding to create space around the text */
+            margin-top: 20px;
+            line-height: 1.5; /* Improve readability */
+            max-width: 100%; /* Limit the width to keep it from stretching too much */
+            box-sizing: border-box; /* Include padding in width calculations */
+            animation: fadeIn 1.5s ease-in-out;
+            text-align: center;
+        }
+
+        /* Ensure text, headings, buttons, etc. turn white in dark mode */
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode p,
+        body.dark-mode span, body.dark-mode button {
+            color: #ffffff;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode .title,
+        body.dark-mode .subtitle,
+        body.dark-mode .item-number,
+        body.dark-mode .item-details {
+            color: #ffffff; /* Change text color to white in dark mode */
+        }
+
+        body.dark-mode button {
+            background-color: #333333;
+            color: #ffffff;
+        }
+
+        body.dark-mode a {
+            color: #ffffff;
+        }
+
+        /* Optional: Link hover effect for dark mode */
+        body.dark-mode a:hover {
+            color: #ff8c00; /* Change to your preferred hover color */
+        }
+
+
+        body.dark-mode .slide h1,
+        body.dark-mode .slide h2,
+        body.dark-mode .slide p {
+            color: #ffffff; /* Ensure slide titles and paragraphs are white */
+        }
+
+        /* Dark mode button styling */
+        body.dark-mode button {
+            background-color: #333333;
+            color: #ffffff;
+        }
+        /* Style for the Home button */
+        .dark-mode-button {
+            background-color: #3498db;
+            color: white;
+            font-size: 16px;  /* Increased font size */
+            padding: 16px 30px;  /* Increased padding for a larger button */
+            border: none;
+            border-radius: 8px;  /* Slightly rounded edges */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: absolute;
+            top: 1%;
+            z-index: 10;
+        }
+        
+        #darkModeToggle {
+            left: 1%;
+        }
+        
+        #home {
+            right: 1%;
+        }
+        
+        /* Hover state for the dark mode button */
+        .dark-mode-button:hover {
+            background-color: #2980b9; /* Darker blue background on hover */
+        }
+    
+        /* Dark mode styling for the button */
+        body.dark-mode .dark-mode-button {
+            background-color: #333333; /* Dark background in dark mode */
+            color: white; /* White text in dark mode */
+        }
+    
+        /* Dark mode button hover state */
+        body.dark-mode .dark-mode-button:hover {
+            background-color: #444444; /* Darker background on hover in dark mode */
+        }
+        
+        body.dark-mode .glowing-button:hover {
+            background-color: #9602fa;
+            box-shadow: 0 0 15px #9602fa, 0 0 25px #2980b9, 0 0 35px #9602fa;
+        }
+        
+        body.dark-mode .response-text {
+            color: white;
+            text-shadow: 0 0 5px #4c00ff, 0 0 10px #4c00ff; /* Softer and less intense glow */
+        }
+    </style>
+</head>
+<body>
+<!-- Dark Mode Button -->
+<button class="dark-mode-button" id="darkModeToggle">Toggle Dark Mode</button>
+<!-- Home Button with similar styling to Toggle Dark Mode -->
+<button class="dark-mode-button" id="home"onclick="location.href='{% url 'loggedIn' %}'">Home</button>
+
+<div class="slideshow-container">
+
+    <!-- Slide for Top Tracks -->
+    <div class="slide fadeIn" id="top_tracks_6_months">
+        <div class="title">Songs you loved:</div>
+        {% for track in top_tracks|slice:":5" %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                <img src="{{ track.album.images.0.url }}" class="item-image" alt="{{ track.name }}">
+                <div class="item-details">
+                    <div class="item-name">{{ track.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for Top Artists -->
+    <div class="slide fadeIn" id="top_artists_6_months">
+        <div class="title">Artists you loved:</div>
+        {% for artist in top_artists|slice:":5" %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                <img src="{{ artist.images.0.url }}" class="item-image" alt="{{ artist.name }}">
+                <div class="item-details">
+                    <div class="item-name">{{ artist.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for Top Genres -->
+    <div class="slide fadeIn" id="top_genre_6_months">
+        <div class="title">Genres you loved:</div>
+        {% for genre in genres|slice:":5" %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                <div class="item-details">
+                    <div class="item-name">{{ genre }}</div> <!-- Removed image for genres -->
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for Recent Tracks -->
+    <div class="slide fadeIn" id="recent_tracks">
+        <div class="title">Most Recently Played Songs:</div>
+        {% for track in recent_tracks|slice:":5" %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                <img src="{{ track.track.album.images.0.url }}" class="item-image" alt="{{ track.track.name }}">
+                <div class="item-details">
+                    <div class="item-name">{{ track.track.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for Rising Artists -->
+    <div class="slide fadeIn" id="rising_artists">
+        <div class="title">Rising Artists:</div>
+        {% for artist in rising_artists %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                <img src="{{ artist.images.0.url }}" class="item-image" alt="{{ artist.name }}">
+                <div class="item-details">
+                    <div class="item-name">{{ artist.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for Ghosted Artists -->
+    <div class="slide fadeIn" id="ghosted_artists">
+        <div class="title">Artists You've Ghosted:</div>
+        <div class="subtitle">You used to listen to these artists a lot more than you do now!</div>
+        {% for artist in ghosted_artists %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                <img src="{{ artist.images.0.url }}" class="item-image" alt="{{ artist.name }}">
+                <div class="item-details">
+                    <div class="item-name">{{ artist.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for Top Unfollowed Artists -->
+    <div class="slide fadeIn" id="top_unfollowed_artists">
+        <div class="title">Top Artists You Don’t Follow:</div>
+        <div class="subtitle">Consider following them to show your support, you already like them!</div>
+        {% for artist in top_unfollowed_artists %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                <img src="{{ artist.images.0.url }}" class="item-image" alt="{{ artist.name }}">
+                <div class="item-details">
+                    <div class="item-name">{{ artist.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for Recommended Songs -->
+    <div class="slide fadeIn" id="recommended_songs">
+        <div class="title">Spotify's Picks For You:</div>
+        {% for song in recommended_songs|slice:":5" %}
+            <div class="item-row">
+                <div class="item-number">#{{ forloop.counter }}</div>
+                {% if song.album.images.0.url %}
+                    <img src="{{ song.album.images.0.url }}" class="item-image" alt="{{ song.name }}">
+                {% endif %}
+                <div class="item-details">
+                    <div class="item-name">{{ song.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Slide for AI Response -->
+    <div class="slide fadeIn" id="ai_response" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <div class="title">What does AI have to say about your listening tastes?</div>
+        {#        <h2>AI Response</h2>#}
+
+        <!-- Embedded Magic Ball Image -->
+        <div class="magic-ball-container">
+            <img src="{% static 'application/8ball.png' %}" alt="Magic Ball"/>
+        </div>
+
+        <!-- Glowing Button -->
+        <button class="glowing-button" onclick="get_ai_response()">Get AI Response</button>
+
+        <!-- AI Response Display -->
+        <div id="response" class="response-text"></div>
+    </div>
+<!-- Slide for End -->
+    <div class="slide fadeIn" id="recommended_songs" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <div class="title">You've Reached the End!!</div>
+        <div class="subtitle">If you liked this Wrapped and want to see it later, click the button below!!!</div>
+        <form method="POST" action="{% url 'store_past_data' %}">
+            {% csrf_token %}
+            <button type="submit" style="font-size: 24px;">Save this Wrapped</button>
+        </form>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <a class="prev" id="leftArrow" onclick="showPreviousSlide()">&#10094;</a>
+    <a class="next" id="rightArrow" onclick="showNextSlide()">&#10095;</a>
+</div>
+<script>
+    let slideIndex = 0;
+ /**
+ * Displays the slide at the specified index and adjusts the visibility of navigation arrows.
+ * @param {number} index - The index of the slide to display.
+ */
+    function showSlides(index) {
+        const slides = document.getElementsByClassName("slide");
+        slideIndex = (index + slides.length) % slides.length;
+
+        // Hide all slides
+        for (let i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        if (slideIndex === 0) {
+            document.getElementById("leftArrow").style.display = "none";
+        } else {
+            document.getElementById("leftArrow").style.display = "block";
+        }
+        if (slideIndex === 9) {
+            document.getElementById("rightArrow").style.display = "none";
+        } else {
+            document.getElementById("rightArrow").style.display = "block";
+        }
+        // Show the current slide
+        slides[slideIndex].style.display = "block";
+    }
+        /**
+         * makes next slide in deck visible
+         */
+    function showNextSlide() {
+        showSlides(slideIndex + 1);
+    }
+        /**
+         * makes previous slide in deck visible
+         */
+    function showPreviousSlide() {
+        showSlides(slideIndex - 1);
+    }
+
+    // Initialize the first slide as visible
+    showSlides(slideIndex);
+    /**
+     * Not a function, enables dark mode button to actually toggle dark mode.
+     */
+    document.getElementById('darkModeToggle').addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        // Optionally, store the mode preference in localStorage
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            localStorage.removeItem('darkMode');
+        }
+    });
+
+    // Check for saved dark mode preference on page load
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
+/**
+ * Retrieves AI-generated content via a POST request and displays the response.
+ * Retries up to 5 times if the response indicates no content found.
+ * @param {number} [retryCount=0] - The current retry attempt count.
+ * @returns {Promise<void>} A promise that resolves when the response is handled.
+ */
+    async function get_ai_response(retryCount = 0) {
+        try {
+            const response = await fetch("{% url 'get_ai_response' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+            });
+
+            const data = await response.json();
+            if (data.response === "No content found" && retryCount < 5) {
+                console.log(`Retrying... Attempt ${retryCount + 1}`);
+                return get_ai_response(retryCount + 1);
+            } else {
+                document.getElementById('response').innerText = data.response || data.error;
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById('response').innerText = "An error occurred. Please try again.";
+        }
+    }
+</script>
+</body>
+</html>
